@@ -1,0 +1,211 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class Main {
+
+    // Step 1: Base class representing a generic item
+    static class Item {
+        protected String name;
+        protected int id;
+
+        public Item(String name, int id) {
+            this.name = name;
+            this.id = id;
+        }
+
+        public void displayInfo() {
+            System.out.println("ID: " + id + " | Name: " + name);
+        }
+    }
+
+    // Step 2: Product class extending Item and adding price
+    static class Product extends Item {
+        private final double price;
+
+        public Product(String name, int id, double price) {
+            super(name, id);
+            this.price = price;
+        }
+
+        @Override
+        public void displayInfo() {
+            super.displayInfo();
+            System.out.println("Price: $" + price);
+        }
+
+        public double getPrice() {
+            return price;
+        }
+    }
+
+    // Scanner and list to manage products
+    static Scanner scanner = new Scanner(System.in);
+    static ArrayList<Product> products = new ArrayList<>();
+
+    // Step 3: Main program with menu
+    public static void main(String[] args) {
+        System.out.println("Hi! Welcome to the Product Management System.");
+
+        boolean running = true;
+        while (running) {
+            printMenu();
+
+            if (!scanner.hasNextInt()) {
+                System.out.println("Please enter a number from the menu.");
+                scanner.nextLine();
+                continue;
+            }
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1 -> addProduct();
+                case 2 -> listProducts();
+                case 3 -> searchProductById();
+                case 4 -> {
+                    System.out.println("Goodbye! Thanks for using the system.");
+                    running = false;
+                }
+                case 5 -> showProductsSortedByPrice();
+                case 6 -> showTotalValue();
+                default -> System.out.println("Invalid choice. Try again!");
+            }
+        }
+    }
+
+    // Print menu
+    private static void printMenu() {
+        System.out.println("\n--- MENU ---");
+        System.out.println("1. Add a new product");
+        System.out.println("2. List all products");
+        System.out.println("3. Search a product by ID");
+        System.out.println("4. Exit");
+        System.out.println("5. Show products sorted by price");
+        System.out.println("6. Show total value of products");
+        System.out.print("Your choice: ");
+    }
+
+    // Step 4: Add a product with validation
+    private static void addProduct() {
+        int id;
+        while (true) {
+            System.out.print("Enter product ID: ");
+            if (scanner.hasNextInt()) {
+                id = scanner.nextInt();
+                scanner.nextLine(); // consume newline
+                boolean exists = false;
+                for (Product p : products) {
+                    if (p.id == id) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (exists) {
+                    System.out.println("That ID is already taken. Try another one.");
+                } else {
+                    break;
+                }
+            } else {
+                System.out.println("Invalid input! Enter a number.");
+                scanner.nextLine();
+            }
+        }
+
+        String name;
+        while (true) {
+            System.out.print("Enter product name: ");
+            name = scanner.nextLine().trim();
+            if (!name.isEmpty()) break;
+            System.out.println("Product name cannot be empty!");
+        }
+
+        double price;
+        while (true) {
+            System.out.print("Enter product price: ");
+            if (scanner.hasNextDouble()) {
+                price = scanner.nextDouble();
+                scanner.nextLine(); // consume newline
+                if (price >= 0) break;
+                System.out.println("Price cannot be negative!");
+            } else {
+                System.out.println("Invalid input! Enter a number.");
+                scanner.nextLine();
+            }
+        }
+
+        products.add(new Product(name, id, price));
+        System.out.println("Product added successfully!");
+    }
+
+    // List all products
+    private static void listProducts() {
+        if (products.isEmpty()) {
+            System.out.println("No products to show. Add some first!");
+            return;
+        }
+
+        System.out.println("\n--- List of Products ---");
+        for (Product p : products) {
+            p.displayInfo();
+            System.out.println("----------------------");
+        }
+    }
+
+    // Search product by ID
+    private static void searchProductById() {
+        System.out.print("Enter the product ID to search: ");
+        if (!scanner.hasNextInt()) {
+            System.out.println("Invalid input! Enter a number.");
+            scanner.nextLine();
+            return;
+        }
+
+        int id = scanner.nextInt();
+        scanner.nextLine(); // consume newline
+        boolean found = false;
+
+        for (Product p : products) {
+            if (p.id == id) {
+                System.out.println("Product found:");
+                p.displayInfo();
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No product with ID " + id + " found.");
+        }
+    }
+
+    // Step 5: Show products sorted by price
+    private static void showProductsSortedByPrice() {
+        if (products.isEmpty()) {
+            System.out.println("No products to show.");
+            return;
+        }
+
+        products.sort((p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice()));
+        System.out.println("\n--- Products Sorted by Price ---");
+        for (Product p : products) {
+            p.displayInfo();
+            System.out.println("----------------------");
+        }
+    }
+
+    // Step 5: Show total value of all products
+    private static void showTotalValue() {
+        if (products.isEmpty()) {
+            System.out.println("No products in the system.");
+            return;
+        }
+
+        double total = 0;
+        for (Product p : products) {
+            total += p.getPrice();
+        }
+
+        System.out.println("Total value of all products: $" + total);
+    }
+}
