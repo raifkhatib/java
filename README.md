@@ -1,5 +1,5 @@
 ## Product Management System (Java)
-A simple console-based application to manage products with features like add, list, search, sort, and calculate total value.
+A simple console-based application to manage products.
 
 
 ## Features
